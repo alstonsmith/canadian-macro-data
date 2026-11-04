@@ -3,7 +3,7 @@
 One commit per task. Tick when done. Failing test first. Fixtures only, no live network in tests.
 
 ## Phase 0: Gates
-- [ ] **T0 Source terms research** (XS, docs only)
+- [x] **T0 Source terms research** (XS, docs only)
   - Acceptance: `docs/sources.md` records StatCan WDS request limits and the Bank of Canada terms of use with URLs and read date; attribution text drafted.
   - Verify: manual read of the notes; any item still unconfirmed is marked unverified.
   - Files: `docs/sources.md`
