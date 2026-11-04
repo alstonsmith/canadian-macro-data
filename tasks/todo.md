@@ -9,7 +9,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Files: `docs/sources.md`
 
 ## Phase 1: Foundation + first source
-- [ ] **T1 Scaffold and tooling** (S) *Ask first: lists dependencies for sign-off*
+- [x] **T1 Scaffold and tooling** (S) *Ask first: lists dependencies for sign-off*
   - Acceptance: `pyproject.toml` with approved deps and pins; package skeleton; `pytest`, `ruff`, `mypy` run clean on an empty smoke test; `.gitignore` covers `data/`.
   - Verify: `uv sync && uv run pytest && uv run ruff check . && uv run mypy src`
   - Files: `pyproject.toml`, `src/canadian_macro/__init__.py`, `tests/test_smoke.py`, `.gitignore`
