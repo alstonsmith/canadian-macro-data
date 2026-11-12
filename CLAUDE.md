@@ -12,11 +12,13 @@ Local app that fetches public Canadian government data, stores it, and produces 
 Python backend with a simple web UI. Specific libraries, storage and chart rendering to be decided in `/spec`. Update this section when they are.
 
 ## Commands
-To be filled in once the stack exists. Record the exact commands here:
-- Install dependencies: `TODO`
-- Run the app: `TODO`
-- Run tests: `TODO`
-- Lint / type-check: `TODO`
+Dependencies are managed with `uv`. pytest, ruff and mypy are in the `dev` dependency group in `pyproject.toml`; their config lives there too.
+- Install dependencies: `uv sync`
+- Run the app: `TODO` (no entry point yet; T5 adds `__main__.py`)
+- Run tests: `uv run pytest` (one task's tests: use the Verify command in `tasks/todo.md`)
+- Lint: `uv run ruff check .`
+- Format: `uv run ruff format .` (check only: `uv run ruff format --check .`)
+- Type-check: `uv run mypy src tests` (strict mode)
 
 ## Data rules
 - Prefer official APIs and bulk downloads over scraping pages. Check each source's current terms and rate limits before fetching.
