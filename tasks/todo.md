@@ -18,7 +18,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Verify: `uv run pytest tests/store tests/test_catalog.py`
   - Files: `catalog.py`, `store/schema.py`, `store/db.py`, 2 test files (`tests/test_catalog.py`, `tests/store/test_db.py`)
   - Depends: T1
-- [ ] **T3 Fetch client** (M)
+- [x] **T3 Fetch client** (M)
   - Acceptance: throttled, cached on disk, retry with backoff; cache hit makes no network call; failures raise clear errors. Tested with a mock transport.
   - Verify: `uv run pytest tests/test_fetch_client.py`
   - Files: `sources/client.py`, `tests/test_fetch_client.py`
