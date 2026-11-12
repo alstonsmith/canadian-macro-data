@@ -13,10 +13,10 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Acceptance: `pyproject.toml` with approved deps and pins; package skeleton; `pytest`, `ruff`, `mypy` run clean on an empty smoke test; `.gitignore` covers `data/`.
   - Verify: `uv sync && uv run pytest && uv run ruff check . && uv run mypy src`
   - Files: `pyproject.toml`, `src/canadian_macro/__init__.py`, `tests/test_smoke.py`, `.gitignore`
-- [ ] **T2 Catalog and schema** (M) *Ask first: schema*
-  - Acceptance: dataset registry for CPI and BoC rate (id, source, identifier, units, scale, licence, attribution); SQLite schema for dataset, fetch, observation, narrative; created idempotently.
+- [x] **T2 Catalog and schema** (M) *Ask first: schema*
+  - Acceptance: dataset registry in code for CPI and BoC rate (id, source, identifier, units, scale, licence, attribution; no `dataset` table); SQLite CORE schema (`core_data_fetch_log`, `core_data_raw_extracts`, `core_narrative`) created idempotently; helper that idempotently creates a safe per-series `raw_data_*` table; `value_num` and `is_current` columns per SPEC data model. Populating them is T5/T10.
   - Verify: `uv run pytest tests/store tests/test_catalog.py`
-  - Files: `catalog.py`, `store/schema.py`, `store/db.py`, 2 test files
+  - Files: `catalog.py`, `store/schema.py`, `store/db.py`, 2 test files (`tests/test_catalog.py`, `tests/store/test_db.py`)
   - Depends: T1
 - [ ] **T3 Fetch client** (M)
   - Acceptance: throttled, cached on disk, retry with backoff; cache hit makes no network call; failures raise clear errors. Tested with a mock transport.
@@ -29,7 +29,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Files: `sources/boc.py`, `tests/sources/test_boc.py`, `tests/fixtures/boc_policy_rate.json`
   - Depends: T2, T3
 - [ ] **T5 Store + `refresh` for BoC** (M)
-  - Acceptance: `refresh --source boc` saves the raw file unchanged, records a fetch (hash, time, release date), and writes observations; re-running with identical data adds no duplicates.
+  - Acceptance: `refresh --source boc` saves the raw file unchanged, records a fetch (hash, time, release date), writes `core_data_raw_extracts` (with `value_num`) and builds the per-series `raw_data_*` tables, keeping `is_current` correct; re-running with identical data adds no duplicates.
   - Verify: `uv run pytest tests/store tests/test_cli_refresh.py`
   - Files: `store/ingest.py`, `__main__.py`, 2 test files
   - Depends: T4

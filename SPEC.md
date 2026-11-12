@@ -76,11 +76,20 @@ SPEC.md  tasks/plan.md  tasks/todo.md  BRIEF.md  DATA_SOURCES.md  CLAUDE.md  LIC
 ```
 Engine (`src/`, `tests/`, `docs/`) and results (`outputs/`) are separate top-level trees in one repo. Downloaders regenerate `data/`.
 
-## Data model (concept; schema change needs sign-off per CLAUDE.md)
-- `dataset`: id, source, source identifier (e.g. `18-10-0004-01`, BoC series name), title, units, scale factor, frequency, licence id, attribution text.
-- `fetch`: dataset id, fetched-at, raw file path, content hash, source release date.
-- `observation`: dataset id, series/coordinate, period, value (nullable), status flag (e.g. suppressed, estimated, revised), fetch id. Revisions insert new rows tied to their fetch; earlier values are kept, not overwritten.
-- `narrative`: dataset id, fetch id, text, model name, prompt hash, check result, checklist result, approval state, timestamps.
+## Data model (approved 2026-11-12; further schema change needs sign-off per CLAUDE.md)
+One SQLite file. SQLite has no schemas, so the two logical schemas are table-name prefixes: `core_` and `raw_data_`.
+
+The dataset registry lives in code (`catalog.py`: id, source, source identifier such as `18-10-0004-01` or a BoC series id, title, units, scale factor, frequency, licence id, attribution text). There is no `dataset` table. `dataset_id` columns are plain text validated against the catalog in code.
+
+**CORE schema**
+- `core_data_fetch_log`: dataset id, fetched-at, raw file path, content hash, source release date.
+- `core_data_raw_extracts`: dataset id, fetch id, series/coordinate, period, `value` (TEXT, exact decimal string, nullable), `value_num` (REAL, best-effort float parse of `value`, convenience for analysis only, NULL if unparsable; the number checker and exports use `value`, never `value_num`), status flag (e.g. suppressed, estimated, revised), `is_current`.
+- `core_narrative`: dataset id, fetch id, text, model name, prompt hash, check result, checklist result, approval state, timestamps.
+
+**RAW_DATA schema**
+- One table per series, `raw_data_<dataset>__<series>`, built by parsing `core_data_raw_extracts`. Name is derived from the dataset id and series id, sanitised to `[a-z0-9_]`, with a short hash suffix when sanitising changed the name, so distinct series never share a table. Columns: extract id, fetch id, period, `value`, `value_num`, status, `is_current`.
+
+**Revisions and `is_current`.** Rows are append-only: a revision inserts new rows under the new fetch and earlier values are kept. `is_current = 1` marks the row from the latest fetch (highest fetch id) for each (series, period) and `0` marks superseded rows. Flipping that flag on older rows is the only update ever made to an existing row; values are never overwritten.
 
 Missing or suppressed values are stored as NULL with a status flag. They are never filled in or interpolated.
 
