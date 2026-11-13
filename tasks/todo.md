@@ -23,10 +23,10 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Verify: `uv run pytest tests/test_fetch_client.py`
   - Files: `sources/client.py`, `tests/test_fetch_client.py`
   - Depends: T1
-- [ ] **T4 BoC Valet parser** (S)
+- [x] **T4 BoC Valet parser** (S)
   - Acceptance: fixture of the policy-rate response parses to `Observation`s; adds the `Status` enum (`ok`, `missing`, `suppressed`, `estimated`, `revised`, per SPEC); null, absent and empty/whitespace-only string values become `value=None` with status `missing`; a non-empty non-decimal value or a malformed shape (non-dict payload, missing/invalid `observations`, unparseable date, absent series key) raises `ParseError`. One test per case.
   - Verify: `uv run pytest tests/sources/test_boc.py`
-  - Files: `sources/boc.py`, `tests/sources/test_boc.py`, `tests/fixtures/boc_policy_rate.json`
+  - Files: `sources/boc.py`, `sources/types.py` (shared `Observation`, `Status`, `ParseError`), `tests/sources/test_boc.py`, `tests/fixtures/boc_policy_rate.json`
   - Depends: T2, T3
 - [ ] **T5 Store + `refresh` for BoC** (M)
   - Acceptance: `refresh --source boc` saves the raw file unchanged, records a fetch (hash, time, release date), writes `core_data_raw_extracts` (with `value_num`) and builds the per-series `raw_data_*` tables, keeping `is_current` correct; re-running with identical data adds no duplicates.

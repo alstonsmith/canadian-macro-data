@@ -42,7 +42,7 @@ CATALOG: dict[str, Dataset] = {
         Dataset(
             id="boc_policy_rate",
             source="boc",
-            identifier="V39079",  # UNVERIFIED: confirm against the Valet series list in T4.
+            identifier="V39079",  # Confirmed in T4: Valet label "Target for the overnight rate".
             title="Bank of Canada policy interest rate (target for the overnight rate)",
             units="percent",
             scale_factor=0,
