@@ -108,6 +108,7 @@ Missing or suppressed values are stored as NULL with a status flag. They are nev
 - Official APIs and downloads only: StatCan WDS / full-table CSV, BoC Valet. No page scraping.
 - Throttle, cache raw responses, back off on failure. StatCan limits are unconfirmed, so start conservative and confirm in the WDS user guide before the first live fetch.
 - Raw downloads are saved unchanged under `data/raw/`; parsing writes only to SQLite.
+- **Quarantine.** A response that downloads fine but fails to parse or validate (malformed JSON, `ParseError`, no observations) is never stored as raw data and writes nothing to SQLite. Its exact bytes are kept for audit in `data/quarantine/<dataset-id>/`, with a sidecar file holding the error message and timestamp, so subtle upstream format changes can be inspected. Only the newest 5 payloads per dataset are kept (the limit is a constant, `QUARANTINE_KEEP`); older ones are deleted. Re-quarantining identical bytes replaces the earlier entry rather than adding a second. Quarantined files are untrusted and git-ignored (under `data/`).
 - Daily scheduled check uses the StatCan release-schedule JSON to skip tables with no new release. BoC series are checked daily with caching.
 - Scheduler only runs while the app/computer is on. On startup it catches up on missed checks. This limit is documented.
 

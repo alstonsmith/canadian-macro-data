@@ -14,7 +14,8 @@ Python backend with a simple web UI. Specific libraries, storage and chart rende
 ## Commands
 Dependencies are managed with `uv`. pytest, ruff and mypy are in the `dev` dependency group in `pyproject.toml`; their config lives there too.
 - Install dependencies: `uv sync`
-- Run the app: `TODO` (no entry point yet; T5 adds `__main__.py`)
+- Refresh BoC data: `uv run python -m canadian_macro refresh --source boc` (writes under `data/`, git-ignored; `--data-dir` overrides)
+- Run the web app: `TODO` (comes with the web UI task)
 - Run tests: `uv run pytest` (one task's tests: use the Verify command in `tasks/todo.md`)
 - Lint: `uv run ruff check .`
 - Format: `uv run ruff format .` (check only: `uv run ruff format --check .`)
