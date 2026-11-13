@@ -139,8 +139,9 @@ Type-hinted, small pure functions at the parse and check boundaries, no I/O in t
 class Observation:
     dataset_id: str
     period: date
-    value: Decimal | None   # None = missing/suppressed; never imputed
-    status: Status          # ok | missing | suppressed | estimated | revised
+    value: Decimal | None  # None = missing/suppressed; never imputed
+    status: Status  # ok | missing | suppressed | estimated | revised
+
 
 def parse_valet_series(payload: dict, dataset: Dataset) -> list[Observation]:
     """Pure: raw Valet JSON -> observations. Raises ParseError on unexpected shape."""
