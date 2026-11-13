@@ -93,6 +93,15 @@ The dataset registry lives in code (`catalog.py`: id, source, source identifier 
 
 Missing or suppressed values are stored as NULL with a status flag. They are never filled in or interpolated.
 
+**Status values.** The status flag is one of a closed set (`Status` enum, stored as its lowercase string value; every row has one):
+- `ok`: a normal reported value.
+- `missing`: the source reported no value (null, absent, or empty string). Stored as NULL.
+- `suppressed`: the source withheld the value (e.g. StatCan confidentiality). Stored as NULL.
+- `estimated`: the source flags the value as an estimate.
+- `revised`: the source flags the value as revised.
+
+**Empty values are missing, not malformed.** A value that is null, absent from an observation, or an empty or whitespace-only string (`""`, `''`) is `value=None` with status `missing`. A non-empty value that is not a valid decimal (e.g. `"abc"`) is malformed and raises `ParseError`. Malformed means the response structure or a present value can't be trusted; missing means the source reported no value.
+
 ## Behaviour requirements
 
 **Fetching**
@@ -131,7 +140,7 @@ class Observation:
     dataset_id: str
     period: date
     value: Decimal | None   # None = missing/suppressed; never imputed
-    status: Status
+    status: Status          # ok | missing | suppressed | estimated | revised
 
 def parse_valet_series(payload: dict, dataset: Dataset) -> list[Observation]:
     """Pure: raw Valet JSON -> observations. Raises ParseError on unexpected shape."""
