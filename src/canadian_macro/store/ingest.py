@@ -6,9 +6,7 @@ fetch supplies the same (series, period).
 """
 
 import hashlib
-import os
 import sqlite3
-import tempfile
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -17,6 +15,7 @@ from pathlib import Path
 from canadian_macro.catalog import Dataset
 from canadian_macro.sources.types import Observation
 from canadian_macro.store.db import ensure_series_table, parse_value_num
+from canadian_macro.store.files import write_atomic
 
 
 @dataclass(frozen=True)
@@ -38,15 +37,7 @@ def save_raw(raw_dir: Path, dataset: Dataset, content: bytes, suffix: str = ".js
         if path.read_bytes() != content:
             raise FileExistsError(f"raw file {path} exists but its bytes differ; not overwriting")
         return path
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
-    try:
-        with os.fdopen(fd, "wb") as handle:
-            handle.write(content)
-        os.replace(tmp_name, path)
-    except BaseException:
-        Path(tmp_name).unlink(missing_ok=True)
-        raise
+    write_atomic(path, content)
     return path
 
 

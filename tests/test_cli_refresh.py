@@ -1,5 +1,7 @@
+import itertools
 import json
 import sqlite3
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -22,9 +24,21 @@ def _transport(
     return httpx.MockTransport(handler)
 
 
+_ticks = itertools.count()
+
+
+def _clock() -> datetime:
+    """Strictly increasing fake time, so quarantine ordering is deterministic."""
+    return datetime(2026, 11, 13, tzinfo=UTC) + timedelta(seconds=next(_ticks))
+
+
 def _run(data_dir: Path, transport: httpx.MockTransport) -> int:
     argv = ["refresh", "--source", "boc", "--data-dir", str(data_dir)]
-    return main(argv, transport=transport, sleep=lambda _seconds: None)
+    return main(argv, transport=transport, sleep=lambda _seconds: None, now=_clock)
+
+
+def _quarantined(data_dir: Path) -> list[Path]:
+    return sorted((data_dir / "quarantine" / "boc_policy_rate").glob("*.json"))
 
 
 def _db(data_dir: Path) -> sqlite3.Connection:
@@ -94,8 +108,44 @@ def test_refresh_boc_malformed_payload_stores_nothing(
     assert _run(tmp_path, _transport(json.dumps(payload).encode())) == 1
 
     assert "not a decimal" in capsys.readouterr().err
-    assert not (tmp_path / "raw").exists()  # no raw file kept for an untrusted response
+    assert not (tmp_path / "raw").exists()  # not kept as raw data
     assert not (tmp_path / "canadian_macro.sqlite").exists()  # and no database rows
+
+
+def test_malformed_payload_is_quarantined_byte_for_byte_with_the_reason(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    payload = json.loads(FIXTURE.read_bytes())
+    payload["observations"][0]["V39079"]["v"] = "abc"
+    content = json.dumps(payload).encode()
+    assert _run(tmp_path, _transport(content)) == 1
+
+    (kept,) = _quarantined(tmp_path)
+    assert kept.read_bytes() == content
+    assert "not a decimal" in kept.with_suffix(".txt").read_text()
+    assert str(kept) in capsys.readouterr().err  # tells the user where to look
+
+
+def test_unparseable_json_and_empty_observations_are_quarantined_too(tmp_path: Path) -> None:
+    assert _run(tmp_path, _transport(b"<html>maintenance</html>")) == 1
+    assert _run(tmp_path, _transport(b'{"observations": []}')) == 1
+    assert [p.read_bytes() for p in _quarantined(tmp_path)] == [
+        b"<html>maintenance</html>",
+        b'{"observations": []}',
+    ]
+
+
+def test_only_the_last_five_malformed_payloads_are_kept(tmp_path: Path) -> None:
+    for i in range(7):
+        assert _run(tmp_path, _transport(f'{{"observations": "bad {i}"}}'.encode())) == 1
+    kept = [p.read_bytes() for p in _quarantined(tmp_path)]
+    assert kept == [f'{{"observations": "bad {i}"}}'.encode() for i in range(2, 7)]
+
+
+def test_good_and_failed_http_responses_are_not_quarantined(tmp_path: Path) -> None:
+    assert _run(tmp_path, _transport(FIXTURE.read_bytes())) == 0
+    assert _run(tmp_path, _transport(b"nope", status=404)) == 1
+    assert not (tmp_path / "quarantine").exists()
 
 
 def test_refresh_boc_http_failure_exits_nonzero(
