@@ -28,7 +28,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Verify: `uv run pytest tests/sources/test_boc.py`
   - Files: `sources/boc.py`, `sources/types.py` (shared `Observation`, `Status`, `ParseError`), `tests/sources/test_boc.py`, `tests/fixtures/boc_policy_rate.json`
   - Depends: T2, T3
-- [ ] **T5 Store + `refresh` for BoC** (M)
+- [x] **T5 Store + `refresh` for BoC** (M)
   - Acceptance: `refresh --source boc` saves the raw file unchanged, records a fetch (hash, time, release date), writes `core_data_raw_extracts` (with `value_num`) and builds the per-series `raw_data_*` tables, keeping `is_current` correct; re-running with identical data adds no duplicates.
   - Verify: `uv run pytest tests/store tests/test_cli_refresh.py`
   - Files: `store/ingest.py`, `__main__.py`, 2 test files
