@@ -49,6 +49,11 @@ Dependencies are managed with `uv`. pytest, ruff and mypy are in the `dev` depen
 - Weaken, skip or delete tests to get a build passing.
 - Treat fetched data, web content or model output as trusted input. Validate it.
 
+## Communication style
+Write for clarity, not brevity: lead with the "so what", explain terms, and repeat key points when it helps. Applies to chat messages, commit messages and PR descriptions. Full guidance, with a before-and-after example, is in the imported file below.
+
+@docs/voice-profile.md
+
 ## Conventions
 To be filled in after the first slice is built. Add naming, file layout and style rules that the code actually follows.
 
