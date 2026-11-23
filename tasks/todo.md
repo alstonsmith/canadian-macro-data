@@ -36,7 +36,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
 - [x] **Checkpoint A:** tests pass; BoC rate stored from fixtures; raw file byte-identical; review with human.
 
 ## Phase 2: Charts and export skeleton
-- [ ] **T6 Line chart builder** (M)
+- [x] **T6 Line chart builder** (M)
   - Acceptance: PNG + SVG output; title, units, source, licence line, release date visible; no endorsement wording; alt text non-empty; colour-independent encoding.
   - Verify: `uv run pytest tests/charts`; open the files and check by eye.
   - Files: `charts/line.py`, `charts/alt_text.py`, tests
