@@ -33,7 +33,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Verify: `uv run pytest tests/store tests/test_cli_refresh.py`
   - Files: `store/ingest.py`, `__main__.py`, 2 test files
   - Depends: T4
-- [ ] **Checkpoint A:** tests pass; BoC rate stored from fixtures; raw file byte-identical; review with human.
+- [x] **Checkpoint A:** tests pass; BoC rate stored from fixtures; raw file byte-identical; review with human.
 
 ## Phase 2: Charts and export skeleton
 - [ ] **T6 Line chart builder** (M)

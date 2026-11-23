@@ -36,7 +36,10 @@ Draft attribution line for the policy rate:
 
 UNVERIFIED:
 - Whether the Bank's terms treat the Valet data under these same terms or additional ones (Valet page points to the terms page only).
-- The exact policy-rate Valet series name. Confirm from the Valet series list when building T4.
+
+Resolved:
+- Policy-rate series: `V39079`, labelled "Target for the overnight rate (business daily)" in the live Valet response (`seriesDetail`), unit "Percent".
+- Fixture `tests/fixtures/boc_policy_rate.json` (3 observations, 2026-11-09 to 2026-11-11) matches the live Valet response: identical `seriesDetail` and `terms` blocks, same observation shape and values. Checked against one live fetch on 2026-11-13 (4,568 observations, 2009-04-21 to 2026-11-11). Valet publishes no release date, so the latest observation date is stored as the release date.
 
 ## Consequences for the build
 - T3: default throttle 1 request per second; honour 409 and 5xx with backoff; no jobs in the StatCan 00:00 to 08:30 ET window.
