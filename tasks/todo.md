@@ -41,7 +41,7 @@ One commit per task. Tick when done. Failing test first. Fixtures only, no live 
   - Verify: `uv run pytest tests/charts`; open the files and check by eye.
   - Files: `charts/line.py`, `charts/alt_text.py`, tests
   - Depends: T5
-- [ ] **T7 Export package without narrative** (M)
+- [x] **T7 Export package without narrative** (M)
   - Acceptance: writes `outputs/<id>/<date>/` with chart files, alt text, data CSV, `sources.md`, manifest (fetch id, release date).
   - Verify: `uv run pytest tests/export`
   - Files: `export/package.py`, `export/sources_md.py`, tests
